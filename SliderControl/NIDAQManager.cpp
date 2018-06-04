@@ -2,18 +2,6 @@
 #include "stdafx.h"
 #include "NIDAQManager.h"
 
-/* TODO: move the following methods
-   outputVoltage(float voltage)
-   readPosition()
-   readForce()
-   */
-
-// TODO: create the following methods:
-// Initializer
-// Destructor
-
-// TODO: add
-
 const float64 NIDAQManager::fx_mult_vals[6] = {-0.47358,  0.39123,  3.41870,
                                                -46.59179, -2.22599, 44.93318};
 
@@ -52,8 +40,7 @@ float NIDAQManager::readForce() {
 
   pthread_mutex_lock(&daq_read_mutex);
   ret = last_reading.fx;
-  // TODO: refactor, separate readings for position
-  // and force.
+  // TODO: refactor, separate readings for position and force
   pthread_mutex_unlock(&daq_read_mutex);
 
   return ret;
