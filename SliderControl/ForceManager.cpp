@@ -4,6 +4,8 @@
   ForceManager handles the storage and computation of slider forces. 
 */
 
+std::set<SliderForce *> ForceManager::active_forces;
+
 bool ForceManager::addForce(SliderForce *f) {
 	auto r = active_forces.insert(f);
 	//Return true if insertion took place.
