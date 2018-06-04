@@ -8,18 +8,18 @@
 class NIDAQManager {
 public:
 	//TODO: refactor to hardware abstraction, create registration methods instead
-  static float outputVoltage(float voltage);
-  static float readForce();
-  static float readPosition();
+  static double outputVoltage(double voltage);
+  static double readForce();
+  static double readPosition();
   static void initThreads();
 
 private:
   static pthread_mutex_t daq_read_mutex;
   // TODO: merge with slider state?
-  static struct reading_t { float position, fx, fz; } last_reading;
+  static struct reading_t { double position, fx, fz; } last_reading;
 
   static pthread_mutex_t daq_write_mutex;
-  static float last_write;
+  static double last_write;
 
   static void *DAQThread(void *_);
   static pthread_t daq_thread_id;

@@ -15,11 +15,11 @@ pthread_mutex_t NIDAQManager::daq_write_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 bool NIDAQManager::running = false;
 
-float NIDAQManager::last_write;
+double NIDAQManager::last_write;
 pthread_t NIDAQManager::daq_thread_id;
 NIDAQManager::reading_t NIDAQManager::last_reading;
 
-float NIDAQManager::outputVoltage(float voltage) {
+double NIDAQManager::outputVoltage(double voltage) {
   if (!running) {
     std::cerr << "Thread not running.\n";
     return NULL;
@@ -30,29 +30,29 @@ float NIDAQManager::outputVoltage(float voltage) {
   pthread_mutex_unlock(&daq_write_mutex);
 }
 
-float NIDAQManager::readForce() {
+double NIDAQManager::readForce() {
   if (!running) {
     std::cerr << "Thread not running.\n";
     return NULL;
   }
 
-  float ret = 0;
+  double ret = 0;
 
   pthread_mutex_lock(&daq_read_mutex);
   ret = last_reading.fx;
-  // TODO: refactor, separate readings for position and force
+  // TODO: refactor, separate readings for position and force. Separate by axis.
   pthread_mutex_unlock(&daq_read_mutex);
 
   return ret;
 }
 
-float NIDAQManager::readPosition() {
+double NIDAQManager::readPosition() {
   if (!running) {
     std::cerr << "Thread not running.\n";
     return NULL;
   }
 
-  float ret = 0;
+  double ret = 0;
 
   pthread_mutex_lock(&daq_read_mutex);
   ret = last_reading.position;
@@ -114,8 +114,8 @@ void *NIDAQManager::DAQThread(void *_) {
     }
 
     pthread_mutex_lock(&daq_read_mutex);
-    last_reading.fx = Fx_Value;
-    last_reading.fz = Fz_Value;
+    last_reading.fx = (double)Fx_Value;
+    last_reading.fz = (double)Fz_Value;
     last_reading.position = data[0];
     pthread_mutex_unlock(&daq_read_mutex);
 
