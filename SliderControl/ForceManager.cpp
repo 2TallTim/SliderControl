@@ -20,7 +20,7 @@ double ForceManager::computeForce(SliderHardware::slider_state_t state) {
 	double force_sum = 0.0;
 
 	for (auto i : active_forces){
-		force_sum += i->getForce(state);
+		force_sum += i->getForce(&state);
 	}
 	return force_sum;
 }

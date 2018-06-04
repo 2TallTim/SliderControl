@@ -159,6 +159,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ForceManager.h" />
+    <ClInclude Include="SpringForce.h" />
     <ClInclude Include="NIDAQManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SliderForce.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="NIDAQManager.cpp" />
     <ClCompile Include="SliderForce.cpp" />
     <ClCompile Include="SliderHardware.cpp" />
+    <ClCompile Include="SpringForce.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

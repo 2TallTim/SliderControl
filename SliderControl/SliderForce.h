@@ -8,7 +8,7 @@ public:
 	SliderForce();
 	
 
-	virtual double getForce(const SliderHardware::slider_state_t state) = 0;
+	virtual double getForce(const SliderHardware::slider_state_t* state) = 0;
 
 };
 
