@@ -73,7 +73,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
     <ExecutablePath>$(ProjectDir)..\..\..\POSIX Threads\Pre-built.2\lib\x86;$(ProjectDir)..\..\..\POSIX Threads\Pre-built.2\include;$(ExecutablePath)</ExecutablePath>
     <LibraryPath>$(ProjectDir)..\..\..\POSIX Threads\Pre-built.2\lib\x86;$(LibraryPath)</LibraryPath>
     <IncludePath>$(ProjectDir)..\..\..\OpenGL Library\glfw-3.2.1.bin.WIN64\include;$(ProjectDir)..\..\..\POSIX Threads\Pre-built.2\include;$(ProjectDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)..\..\..\OpenGL Library\glew-2.0.0 WIN32\include;$(ProgramFiles)\National Instruments\Shared\ExternalCompilerSupport\C\include\;$(IncludePath)</IncludePath>
@@ -90,7 +89,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -99,13 +98,13 @@
       <AdditionalIncludeDirectories>C:\Users\Harrison\Desktop\Senior Design 1820 Code\POSIX Threads\Pre-built.2\include;C:\Program Files %28x86%29\National Instruments\NI-DAQ\DAQmx ANSI C Dev\include;C:\Users\Harrison\Desktop\Senior Design 1820 Code\POSIX Threads\Pre-built.2\lib\x86;C:\Users\Harrison\Desktop\Senior Design 1820 Code\OpenGL Library\glfw-3.2.1.bin.WIN32\include;C:\Users\Harrison\Desktop\Senior Design 1820 Code\OpenGL Library\glew-2.0.0 WIN32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <CompileAsManaged>true</CompileAsManaged>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\Harrison\Desktop\Senior Design 1820 Code\POSIX Threads\Pre-built.2\lib\x86;C:\Program Files %28x86%29\National Instruments\NI-DAQ\DAQmx ANSI C Dev\lib\msvc;C:\Users\Harrison\Desktop\Senior Design 1820 Code\OpenGL Library\glfw-3.2.1.bin.WIN32\lib-vc2015;C:\Users\Harrison\Desktop\Senior Design 1820 Code\OpenGL Library\glew-2.0.0 WIN32\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;pthreadVC2.lib;NIDAQmx.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>C:\Users\Harrison\Desktop\Senior Design 1820 Code\POSIX Threads\Pre-built.2\lib\x86\pthreadVC2.lib</ImportLibrary>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;pthreadVCE2.lib;NIDAQmx.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

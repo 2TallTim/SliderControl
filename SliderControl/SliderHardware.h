@@ -9,7 +9,7 @@ public:
 		double position;
 		double fx, fy, fz;
 	};
-	void outputVoltage(float voltage);
+	//void outputVoltage(float voltage);
 	//Figure out what needs to go here.
 };
 

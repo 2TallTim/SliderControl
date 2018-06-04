@@ -28,8 +28,8 @@ pthread_mutex_t NIDAQManager::daq_write_mutex = PTHREAD_MUTEX_INITIALIZER;
 bool NIDAQManager::running = false;
 
 float NIDAQManager::last_write;
-pthread_t daq_thread_id;
-//auto NIDAQManager::last_reading;
+pthread_t NIDAQManager::daq_thread_id;
+NIDAQManager::reading_t NIDAQManager::last_reading;
 
 float NIDAQManager::outputVoltage(float voltage) {
   if (!running) {
