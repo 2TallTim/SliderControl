@@ -10,17 +10,20 @@
 const float64 NIDAQManager::fx_mult_vals[6] = {-0.47358,  0.39123,  3.41870,
                                                -46.59179, -2.22599, 44.93318};
 
-const float64 NIDAQManager::Fz_mult_vals[6] = {59.09970, 0.62739,  58.70165,
+const float64 NIDAQManager::fz_mult_vals[6] = {59.09970, 0.62739,  58.70165,
                                                -1.01252, 60.48335, -0.85125};
-const float64 NIDAQManager::Fz_gain = 0.314991696374748;
-const float64 NIDAQManager::Fx_gain = 0.784274894660663;
+const float64 NIDAQManager::fz_gain = 0.314991696374748;
+const float64 NIDAQManager::fx_gain = 0.784274894660663;
 
 pthread_mutex_t NIDAQManager::daq_read_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t NIDAQManager::daq_write_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-bool NIDAQManager::running = false;
+float64 NIDAQManager::voltage_bias[6];
 
+bool NIDAQManager::running = false;
+bool NIDAQManager::bias_measured = false;
 double NIDAQManager::last_write;
+
 pthread_t NIDAQManager::daq_thread_id;
 NIDAQManager::reading_t NIDAQManager::last_reading;
 
@@ -113,12 +116,19 @@ void *NIDAQManager::DAQThread(void *_) {
     float64 Fx_Value = 0.0;
     int32 read;
 
+
     DAQmxReadAnalogF64(input_task_handle, -1, float64(1.0),
                                    DAQmx_Val_GroupByChannel, data, 7,
                        &read, NULL);
+    if (!bias_measured) {
+      memcpy(voltage_bias, data + 1, 6 * sizeof(float64));
+      bias_measured = true;
+    }
     for (int i = 1; i < 7; i++) {
-      Fz_Value += (Fz_mult_vals[i - 1] / Fz_gain) * data[i];
-      Fx_Value += (fx_mult_vals[i - 1] / Fx_gain) * data[i];
+      Fz_Value +=
+          (fz_mult_vals[i - 1] / fz_gain) * (data[i] - voltage_bias[i - 1]);
+      Fx_Value +=
+          (fx_mult_vals[i - 1] / fx_gain) * (data[i] - voltage_bias[i - 1]);
     }
 
     pthread_mutex_lock(&daq_read_mutex);

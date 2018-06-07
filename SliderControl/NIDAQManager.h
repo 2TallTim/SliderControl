@@ -23,11 +23,15 @@ private:
 
   static void *DAQThread(void *_);
   static pthread_t daq_thread_id;
+  
   static bool running;
+  static bool bias_measured;
+
+  static float64 voltage_bias[6];
 
   static const float64 fx_mult_vals[6];
-
-  static const float64 Fz_mult_vals[6];
-  static const float64 Fz_gain;
-  static const float64 Fx_gain;
+  static const float64 fz_mult_vals[6];
+  static const float64 fz_gain;
+  static const float64 fx_gain;
+  
 };
