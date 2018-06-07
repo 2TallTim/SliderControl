@@ -2,6 +2,11 @@
 #include "stdafx.h"
 #include "NIDAQManager.h"
 
+#define DAQmxErrChk(functionCall)          \
+  if (DAQmxFailed(error = (functionCall))) \
+    goto Error;                            \
+  else
+
 const float64 NIDAQManager::fx_mult_vals[6] = {-0.47358,  0.39123,  3.41870,
                                                -46.59179, -2.22599, 44.93318};
 
@@ -73,9 +78,12 @@ void NIDAQManager::initThreads() {
 }
 
 void *NIDAQManager::DAQThread(void *_) {
-  TaskHandle taskHandle = (TaskHandle)1;
-  DAQmxCreateTask("", &taskHandle);
+  TaskHandle input_task_handle = (TaskHandle)1;
+  TaskHandle output_task_handle = (TaskHandle)2;
+  DAQmxCreateTask("i", &input_task_handle);
+  DAQmxCreateTask("o", &output_task_handle);
 
+  int32 error = 0;
   /*
   DAQ WIRING
   ==========
@@ -85,29 +93,29 @@ void *NIDAQManager::DAQThread(void *_) {
   */
 
   // Configure channels
-  DAQmxCreateAIVoltageChan(taskHandle, "Dev1/ai0", "PosRead",
+  DAQmxCreateAIVoltageChan(input_task_handle, "Dev1/ai0", "PosRead",
                            DAQmx_Val_Cfg_Default, -10.0, 10.0, DAQmx_Val_Volts,
                            NULL);
-  DAQmxCreateAIVoltageChan(taskHandle, "Dev/ai52:55,Dev1/ai64:65", "ForceRead",
+  DAQmxCreateAIVoltageChan(input_task_handle, "Dev1/ai52:55,Dev1/ai64:65",
+                                       "",
                            DAQmx_Val_Cfg_Default, -10.0, 10.0, DAQmx_Val_Volts,
                            NULL);
-  DAQmxCreateAOVoltageChan(taskHandle, "Dev/ao0", "ForceWrite", -10.0, 10.0,
+  DAQmxCreateAOVoltageChan(output_task_handle, "Dev1/ao0", "ForceWrite", -10.0, 10.0,
                            DAQmx_Val_Volts, "");
 
-  // Configure sample clocks
-  DAQmxCfgSampClkTiming(taskHandle, "PosRead", 1000, DAQmx_Val_Rising,
-                        DAQmx_Val_FiniteSamps, 2);
-  DAQmxCfgSampClkTiming(taskHandle, "ForceRead", 1000, DAQmx_Val_Rising,
-                        DAQmx_Val_FiniteSamps, 2);
 
-  DAQmxStartTask(taskHandle);
-
+  DAQmxStartTask(input_task_handle);
+  DAQmxStartTask(output_task_handle);
+  char errBuff[2048] = {'\0'};
   while (running) {
     float64 data[7];
     float64 Fz_Value = 0.0;
     float64 Fx_Value = 0.0;
-    DAQmxReadAnalogF64(taskHandle, 1, 1.0, DAQmx_Val_GroupByScanNumber, data, 1,
-                       nullptr, NULL);
+    int32 read;
+
+    DAQmxReadAnalogF64(input_task_handle, -1, float64(1.0),
+                                   DAQmx_Val_GroupByChannel, data, 7,
+                       &read, NULL);
     for (int i = 1; i < 7; i++) {
       Fz_Value += (Fz_mult_vals[i - 1] / Fz_gain) * data[i];
       Fx_Value += (fx_mult_vals[i - 1] / Fx_gain) * data[i];
@@ -124,13 +132,27 @@ void *NIDAQManager::DAQThread(void *_) {
     pthread_mutex_lock(&daq_write_mutex);
     voltage_to_write = last_write;
     pthread_mutex_unlock(&daq_write_mutex);
-
-    DAQmxWriteAnalogF64(taskHandle, 1, 1, 1.0, DAQmx_Val_GroupByChannel,
+    DAQmxWriteAnalogF64(output_task_handle, 1, 1, 1.0, DAQmx_Val_GroupByChannel,
                         &voltage_to_write, nullptr, NULL);
   }
 
-  DAQmxStopTask(taskHandle);
-  DAQmxClearTask(taskHandle);
+  DAQmxStopTask(input_task_handle);
+  DAQmxStopTask(output_task_handle);
+  DAQmxClearTask(input_task_handle);
+  DAQmxClearTask(output_task_handle);
 
   return nullptr;
+Error:
+  if (DAQmxFailed(error)) DAQmxGetExtendedErrorInfo(errBuff, 2048);
+  if (input_task_handle != 0) {
+    /*********************************************/
+    // DAQmx Stop Code
+    /*********************************************/
+    DAQmxStopTask(input_task_handle);
+    DAQmxClearTask(input_task_handle);
+  }
+  if (DAQmxFailed(error)) printf("DAQmx Error: %s\n", errBuff);
+  printf("End of program, press Enter key to quit\n");
+  getchar();
+  return 0;
 }
